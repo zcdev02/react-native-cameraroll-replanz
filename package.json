@@ -2,7 +2,7 @@
   "name": "react-native-cameraroll-replanz",
   "author": "ReplanZ (Alexey Dmitrenko)",
   "homepage": "https://github.com/react-native-cameraroll-replanz/react-native-cameraroll#readme",
-  "version": "5.7.4",
+  "version": "5.7.5",
   "description": "React Native Camera Roll for iOS & Android",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -14,7 +14,7 @@
     "lib/",
     "android/",
     "ios/",
-    "react-native-cameraroll.podspec",
+    "react-native-cameraroll-replanz.podspec",
     "README.md"
   ],
   "scripts": {
