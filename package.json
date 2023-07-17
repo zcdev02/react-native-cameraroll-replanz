@@ -1,7 +1,7 @@
 {
   "name": "react-native-cameraroll-replanz",
-  "author": "ReplanZ (Alexey Dmitrenko)>",
-  "private": false,
+  "author": "ReplanZ (Alexey Dmitrenko)",
+  "homepage": "https://github.com/react-native-cameraroll-replanz/react-native-cameraroll#readme",
   "version": "5.7.3",
   "description": "React Native Camera Roll for iOS & Android",
   "main": "lib/commonjs/index",
@@ -49,7 +49,7 @@
     "camera",
     "photo gallery"
   ],
-  "license": "MIT",
+  "license": "",
   "peerDependencies": {
     "react-native": ">=0.59"
   },
@@ -113,7 +113,7 @@
     ]
   },
   "codegenConfig": {
-    "name": "rncameraroll2",
+    "name": "rncameraroll",
     "type": "modules",
     "jsSrcsDir": "./src",
     "android": {
@@ -157,5 +157,9 @@
         }
       }
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zcdev02/react-native-cameraroll-replanz.git"
   }
 }
