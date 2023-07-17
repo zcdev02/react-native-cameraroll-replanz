@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.homepage     = package['homepage']
   s.platform     = :ios, "9.0"
 
-  s.source       = { :git => "https://github.com/react-native-community/react-native-cameraroll.git", :tag => "v#{s.version}" }
+  s.source       = { :git => "https://github.com/zcdev02/react-native-cameraroll-replanz.git", :tag => "v#{s.version}" }
   s.source_files  = "ios/**/*.{h,m,mm}"
   
   if fabric_enabled
