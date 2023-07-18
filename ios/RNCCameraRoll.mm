@@ -366,7 +366,8 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     //   will not be set, as expected
     assetFetchOptions.fetchLimit = first + 1;
   }
-  assetFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+  // assetFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+  assetFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"modificationDate" ascending:NO]];
 
   BOOL __block foundAfter = NO;
   BOOL __block hasNextPage = NO;
