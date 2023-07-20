@@ -247,81 +247,56 @@ RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
   requestPhotoLibraryAccess(reject, loadBlock, true);
 }
 
-RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-  NSString *const mediaType = [params objectForKey:@"assetType"] ? [RCTConvert NSString:params[@"assetType"]] : @"All";
-  NSString *const albumType = [params objectForKey:@"albumType"] ? [RCTConvert NSString:params[@"albumType"]] : @"Album";
-  // PHFetchOptions* options = [[PHFetchOptions alloc] init];
-  // PHFetchResult<PHAssetCollection *> *const assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:options];
-  NSMutableArray * result = [NSMutableArray new];
-  // [assetCollectionFetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-  //   PHFetchOptions *const assetFetchOptions = [RCTConvert PHFetchOptionsFromMediaType:mediaType fromTime:0 toTime:0];
-  //   // Enumerate assets within the collection
-  //   PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:obj options:assetFetchOptions];
-  //   if (assetsFetchResult.count > 0) {
-  //     [result addObject:@{
-  //       @"title": [obj localizedTitle],
-  //       @"count": @(assetsFetchResult.count)
-  //     }];
-  //   }
-  // }];
-   NSString *__block fetchedAlbumType = nil;
-  void (^convertAsset)(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) =
-    ^(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-      PHFetchOptions *const assetFetchOptions = [RCTConvert PHFetchOptionsFromMediaType:mediaType fromTime:0 toTime:0];
-      // Enumerate assets within the collection
-      PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:obj options:assetFetchOptions];
-      if (assetsFetchResult.count > 0) {
-        [result addObject:@{
-          @"title": [obj localizedTitle],
-          @"count": @(assetsFetchResult.count),
-          @"type": fetchedAlbumType
-        }];
-      }
-    };
+// RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
+//                   resolve:(RCTPromiseResolveBlock)resolve
+//                   reject:(RCTPromiseRejectBlock)reject)
+// {
+//   NSString *const mediaType = [params objectForKey:@"assetType"] ? [RCTConvert NSString:params[@"assetType"]] : @"All";
+//   NSString *const albumType = [params objectForKey:@"albumType"] ? [RCTConvert NSString:params[@"albumType"]] : @"Album";
+//   // PHFetchOptions* options = [[PHFetchOptions alloc] init];
+//   // PHFetchResult<PHAssetCollection *> *const assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:options];
+//   NSMutableArray * result = [NSMutableArray new];
+//   // [assetCollectionFetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//   //   PHFetchOptions *const assetFetchOptions = [RCTConvert PHFetchOptionsFromMediaType:mediaType fromTime:0 toTime:0];
+//   //   // Enumerate assets within the collection
+//   //   PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:obj options:assetFetchOptions];
+//   //   if (assetsFetchResult.count > 0) {
+//   //     [result addObject:@{
+//   //       @"title": [obj localizedTitle],
+//   //       @"count": @(assetsFetchResult.count)
+//   //     }];
+//   //   }
+//   // }];
+//    NSString *__block fetchedAlbumType = nil;
+//   void (^convertAsset)(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) =
+//     ^(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//       PHFetchOptions *const assetFetchOptions = [RCTConvert PHFetchOptionsFromMediaType:mediaType fromTime:0 toTime:0];
+//       // Enumerate assets within the collection
+//       PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:obj options:assetFetchOptions];
+//       if (assetsFetchResult.count > 0) {
+//         [result addObject:@{
+//           @"title": [obj localizedTitle],
+//           @"count": @(assetsFetchResult.count),
+//           @"type": fetchedAlbumType
+//         }];
+//       }
+//     };
 
-  PHFetchOptions* options = [[PHFetchOptions alloc] init];
-  if ([albumType isEqualToString:@"Album"] || [albumType isEqualToString:@"All"]) {
-    fetchedAlbumType = @"Album";
-    PHFetchResult<PHAssetCollection *> *const assets = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:options];
-    [assets enumerateObjectsUsingBlock:convertAsset];
-  }
-  if ([albumType isEqualToString:@"SmartAlbum"] || [albumType isEqualToString:@"All"]) {
-    fetchedAlbumType = @"SmartAlbum";
-    PHFetchResult<PHAssetCollection *> *const assets = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAny options:options];
-    [assets enumerateObjectsUsingBlock:convertAsset];
-  }
-  resolve(result);
-}
+//   PHFetchOptions* options = [[PHFetchOptions alloc] init];
+//   if ([albumType isEqualToString:@"Album"] || [albumType isEqualToString:@"All"]) {
+//     fetchedAlbumType = @"Album";
+//     PHFetchResult<PHAssetCollection *> *const assets = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:options];
+//     [assets enumerateObjectsUsingBlock:convertAsset];
+//   }
+//   if ([albumType isEqualToString:@"SmartAlbum"] || [albumType isEqualToString:@"All"]) {
+//     fetchedAlbumType = @"SmartAlbum";
+//     PHFetchResult<PHAssetCollection *> *const assets = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAny options:options];
+//     [assets enumerateObjectsUsingBlock:convertAsset];
+//   }
+//   resolve(result);
+// }
 
-static void RCTResolvePromise(RCTPromiseResolveBlock resolve,
-                              NSArray<NSDictionary<NSString *, id> *> *assets,
-                              BOOL hasNextPage,
-                              bool isLimited)
-{
-  if (!assets.count) {
-    resolve(@{
-      @"edges": assets,
-      @"page_info": @{
-        @"has_next_page": @NO,
-      },
-      @"limited": @(isLimited)
-    });
-    return;
-  }
-  resolve(@{
-    @"edges": assets,
-    @"page_info": @{
-      @"start_cursor": assets[0][@"node"][@"image"][@"uri"],
-      @"end_cursor": assets[assets.count - 1][@"node"][@"image"][@"uri"],
-      @"has_next_page": @(hasNextPage),
-    },
-    @"limited": @(isLimited)
-  });
-}
-
+//Возвращаем либо все(включая смарт альбомы) или возвращаем только пользовательские альбомы либо только смарт альбомы
 RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
@@ -345,13 +320,6 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
   BOOL __block includeImageSize = [include indexOfObject:@"imageSize"] != NSNotFound;
   BOOL __block includePlayableDuration = [include indexOfObject:@"playableDuration"] != NSNotFound;
 
-  // If groupTypes is "all", we want to fetch the SmartAlbum "all photos". Otherwise, all
-  // other groupTypes values require the "album" collection type.
-  // PHAssetCollectionType const collectionType = ([groupTypes isEqualToString:@"all"]
-  //                                               ? PHAssetCollectionTypeSmartAlbum
-  //                                               : PHAssetCollectionTypeAlbum);
-  // PHAssetCollectionSubtype const collectionSubtype = [RCTConvert PHAssetCollectionSubtype:groupTypes];
-
   // Predicate for fetching assets within a collection
   PHFetchOptions *const assetFetchOptions = [RCTConvert PHFetchOptionsFromMediaType:mediaType fromTime:fromTime toTime:toTime];
   // We can directly set the limit if we guarantee every image fetched will be
@@ -366,20 +334,12 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     //   will not be set, as expected
     assetFetchOptions.fetchLimit = first + 1;
   }
-  // assetFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
-  assetFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"modificationDate" ascending:NO]];
+//   assetFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
 
   BOOL __block foundAfter = NO;
   BOOL __block hasNextPage = NO;
   BOOL __block resolvedPromise = NO;
   NSMutableArray<NSDictionary<NSString *, id> *> *assets = [NSMutableArray new];
-
-  // Filter collection name ("group")
-  // PHFetchOptions *const collectionFetchOptions = [PHFetchOptions new];
-  // collectionFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"endDate" ascending:NO]];
-  // if (groupName != nil) {
-  //   collectionFetchOptions.predicate = [NSPredicate predicateWithFormat:@"localizedTitle = %@", groupName];
-  // }
 
   BOOL __block stopCollections_;
   NSString __block *currentCollectionName;
@@ -489,45 +449,78 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
       }];
     };
 
+    //Получаем все фотографии если groupTypes = all
     if ([groupTypes isEqualToString:@"all"]) {
-      PHFetchResult <PHAsset *> *const assetFetchResult = [PHAsset fetchAssetsWithOptions: assetFetchOptions];
-      currentCollectionName = @"All Photos";
-      [assetFetchResult enumerateObjectsUsingBlock:collectAsset];
+      //Делаем запрос и получаем из галереи все assets
+        PHFetchResult<PHAsset *> *assetFetchResult = [PHAsset fetchAssetsWithOptions:nil];
+            currentCollectionName = @"All Photos";
+
+            // Временный массив для хранения assets в обратном порядке.
+            NSMutableArray<PHAsset *> *reversedAssets = [NSMutableArray arrayWithCapacity:assetFetchResult.count];
+             
+            ///Записываем в reversedAssets перевернутый результат
+            [assetFetchResult enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [reversedAssets addObject:obj];
+            }];
+
+            // Перечисляем перевернутые assets в node
+            [reversedAssets enumerateObjectsUsingBlock:collectAsset];
     } else {
-      // PHFetchResult<PHAssetCollection *> *const assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:collectionType subtype:collectionSubtype options:collectionFetchOptions];
-      // [assetCollectionFetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull assetCollection, NSUInteger collectionIdx, BOOL * _Nonnull stopCollections) {
-      //   // Enumerate assets within the collection
-      //   PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:assetFetchOptions];
-      //   currentCollectionName = [assetCollection localizedTitle];
-      //   [assetsFetchResult enumerateObjectsUsingBlock:collectAsset];
-      //   *stopCollections = stopCollections_;
-      // }];
+      //Делаем запросы по альбомам
       PHFetchResult<PHAssetCollection *> * assetCollectionFetchResult;
+      //Добавляем начальный метод сортировки для получения фоток из альбомов
+      PHFetchOptions *const FetchOptionsSmart = [PHFetchOptions new];
+        FetchOptionsSmart.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"startDate" ascending:NO]];
       if ([groupTypes isEqualToString:@"smartalbum"]) {
-        assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
+        //Получаем фотки из альбомов
+        assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAny options:FetchOptionsSmart];
         [assetCollectionFetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull assetCollection, NSUInteger collectionIdx, BOOL * _Nonnull stopCollections) {
-          if ([assetCollection.localizedTitle isEqualToString:groupName]) {
-            PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:assetFetchOptions];
-            currentCollectionName = [assetCollection localizedTitle];
-            [assetsFetchResult enumerateObjectsUsingBlock:collectAsset];
-          }
+            //Находим нужный альбом и для всех элементов применяем метод реверсии полученного результата
+            if ([assetCollection.localizedTitle isEqualToString:groupName]) {
+                PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
+                currentCollectionName = [assetCollection localizedTitle];
+
+                //  Временный массив для хранения assets в обратном порядке.
+                NSMutableArray<PHAsset *> *reversedAssets = [NSMutableArray arrayWithCapacity:assetsFetchResult.count];
+                
+                //Записываем в reversedAssets перевернутый результат
+                [assetsFetchResult enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    [reversedAssets addObject:obj];
+                }];
+
+                // Перечисляем перевернутые assets в node
+                [reversedAssets enumerateObjectsUsingBlock:collectAsset];
+            }
+            
           *stopCollections = stopCollections_;
         }];
       } else {
+        //Блок с альбомами пользователя
         PHAssetCollectionSubtype const collectionSubtype = [RCTConvert PHAssetCollectionSubtype:groupTypes];
-
-        // Filter collection name ("group")
+        // Начальный фильтр
         PHFetchOptions *const collectionFetchOptions = [PHFetchOptions new];
-        collectionFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"endDate" ascending:NO]];
+        collectionFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"startDate" ascending:YES]];
         if (groupName != nil) {
+          //Фильтрует коллекцию по полю "localizedTitle", если groupName != nil,  где значение этого поля должно быть равно значению groupName.
           collectionFetchOptions.predicate = [NSPredicate predicateWithFormat:@"localizedTitle = %@", groupName];
         }
+        //Запрашиваем информацию по конкретному альбому
         assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:collectionSubtype options:collectionFetchOptions];
         [assetCollectionFetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull assetCollection, NSUInteger collectionIdx, BOOL * _Nonnull stopCollections) {
-            // Enumerate assets within the collection
-          PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:assetFetchOptions];
-          currentCollectionName = [assetCollection localizedTitle];
-          [assetsFetchResult enumerateObjectsUsingBlock:collectAsset];
+            // Запрашиваем фотки с альбома
+            PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
+            currentCollectionName = [assetCollection localizedTitle];
+
+            //  Временный массив для хранения assets в обратном порядке.
+            NSMutableArray<PHAsset *> *reversedAssets = [NSMutableArray arrayWithCapacity:assetsFetchResult.count];
+
+            //Записываем в reversedAssets перевернутый результат
+            [assetsFetchResult enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [reversedAssets addObject:obj];
+            }];
+
+            // Перечисляем перевернутые assets в node
+            [reversedAssets enumerateObjectsUsingBlock:collectAsset];
           *stopCollections = stopCollections_;
         }];
       }
@@ -541,6 +534,260 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
     }
   }, false);
 }
+
+static void RCTResolvePromise(RCTPromiseResolveBlock resolve,
+                              NSArray<NSDictionary<NSString *, id> *> *assets,
+                              BOOL hasNextPage,
+                              bool isLimited)
+{
+  if (!assets.count) {
+    resolve(@{
+      @"edges": assets,
+      @"page_info": @{
+        @"has_next_page": @NO,
+      },
+      @"limited": @(isLimited)
+    });
+    return;
+  }
+  resolve(@{
+    @"edges": assets,
+    @"page_info": @{
+      @"start_cursor": assets[0][@"node"][@"image"][@"uri"],
+      @"end_cursor": assets[assets.count - 1][@"node"][@"image"][@"uri"],
+      @"has_next_page": @(hasNextPage),
+    },
+    @"limited": @(isLimited)
+  });
+}
+
+//Получаем фотки TODO: доработать фильтрацию и методы определения что за альбом текущий.
+RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  checkPhotoLibraryConfig();
+
+  NSUInteger const first = [RCTConvert NSInteger:params[@"first"]];
+  NSString *const afterCursor = [RCTConvert NSString:params[@"after"]];
+  NSString *const groupName = [RCTConvert NSString:params[@"groupName"]];
+  NSString *const groupTypes = [[RCTConvert NSString:params[@"groupTypes"]] lowercaseString];
+  NSString *const mediaType = [RCTConvert NSString:params[@"assetType"]];
+  NSUInteger const fromTime = [RCTConvert NSInteger:params[@"fromTime"]];
+  NSUInteger const toTime = [RCTConvert NSInteger:params[@"toTime"]];
+  NSArray<NSString *> *const mimeTypes = [RCTConvert NSStringArray:params[@"mimeTypes"]];
+  NSArray<NSString *> *const include = [RCTConvert NSStringArray:params[@"include"]];
+
+  BOOL __block includeFilename = [include indexOfObject:@"filename"] != NSNotFound;
+  BOOL __block includeFileSize = [include indexOfObject:@"fileSize"] != NSNotFound;
+  BOOL __block includeFileExtension = [include indexOfObject:@"fileExtension"] != NSNotFound;
+  BOOL __block includeLocation = [include indexOfObject:@"location"] != NSNotFound;
+  BOOL __block includeImageSize = [include indexOfObject:@"imageSize"] != NSNotFound;
+  BOOL __block includePlayableDuration = [include indexOfObject:@"playableDuration"] != NSNotFound;
+
+  // Predicate for fetching assets within a collection
+  PHFetchOptions *const assetFetchOptions = [RCTConvert PHFetchOptionsFromMediaType:mediaType fromTime:fromTime toTime:toTime];
+  // We can directly set the limit if we guarantee every image fetched will be
+  // added to the output array within the `collectAsset` block
+  BOOL collectAssetMayOmitAsset = !!afterCursor || [mimeTypes count] > 0;
+  if (!collectAssetMayOmitAsset) {
+    // We set the fetchLimit to first + 1 so that `hasNextPage` will be set
+    // correctly:
+    // - If the user set `first: 10` and there are 11 photos, `hasNextPage`
+    //   will be set to true below inside of `collectAsset`
+    // - If the user set `first: 10` and there are 10 photos, `hasNextPage`
+    //   will not be set, as expected
+    assetFetchOptions.fetchLimit = first + 1;
+  }
+//   assetFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+
+  BOOL __block foundAfter = NO;
+  BOOL __block hasNextPage = NO;
+  BOOL __block resolvedPromise = NO;
+  NSMutableArray<NSDictionary<NSString *, id> *> *assets = [NSMutableArray new];
+
+  BOOL __block stopCollections_;
+  NSString __block *currentCollectionName;
+
+  requestPhotoLibraryAccess(reject, ^(bool isLimited){
+    void (^collectAsset)(PHAsset*, NSUInteger, BOOL*) = ^(PHAsset * _Nonnull asset, NSUInteger assetIdx, BOOL * _Nonnull stopAssets) {
+      NSString *const uri = [NSString stringWithFormat:@"ph://%@", [asset localIdentifier]];
+
+      if (afterCursor && !foundAfter) {
+        if ([afterCursor isEqualToString:uri]) {
+          foundAfter = YES;
+        }
+        return;
+      }
+      NSString *_Nullable originalFilename = NULL;
+      NSString *_Nullable fileExtension = NULL;
+      PHAssetResource *_Nullable resource = NULL;
+      NSNumber* fileSize = [NSNumber numberWithInt:0];
+
+      if (includeFilename || includeFileSize || [mimeTypes count] > 0) {
+        // Get underlying resources of an asset - this includes files as well as details about edited PHAssets
+        // This is required for the filename and mimeType filtering
+        NSArray<PHAssetResource *> *const assetResources = [PHAssetResource assetResourcesForAsset:asset];
+        resource = [assetResources firstObject];
+        originalFilename = resource.originalFilename;
+        fileSize = [resource valueForKey:@"fileSize"];
+      }
+
+      // WARNING: If you add any code to `collectAsset` that may skip adding an
+      // asset to the `assets` output array, you should do it inside this
+      // block and ensure the logic for `collectAssetMayOmitAsset` above is
+      // updated
+      if (collectAssetMayOmitAsset) {
+        if ([mimeTypes count] > 0 && resource) {
+          CFStringRef const uti = (__bridge CFStringRef _Nonnull)(resource.uniformTypeIdentifier);
+          NSString *const mimeType = (NSString *)CFBridgingRelease(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType));
+
+          BOOL __block mimeTypeFound = NO;
+          [mimeTypes enumerateObjectsUsingBlock:^(NSString * _Nonnull mimeTypeFilter, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([mimeType isEqualToString:mimeTypeFilter]) {
+              mimeTypeFound = YES;
+              *stop = YES;
+            }
+          }];
+
+          if (!mimeTypeFound) {
+            return;
+          }
+        }
+      }
+
+      // If we've accumulated enough results to resolve a single promise
+      if (first == assets.count) {
+        *stopAssets = YES;
+        stopCollections_ = YES;
+        hasNextPage = YES;
+        RCTAssert(resolvedPromise == NO, @"Resolved the promise before we finished processing the results.");
+        RCTResolvePromise(resolve, assets, hasNextPage, isLimited);
+        resolvedPromise = YES;
+        return;
+      }
+
+      NSString *const assetMediaTypeLabel = (asset.mediaType == PHAssetMediaTypeVideo
+                                            ? @"video"
+                                            : (asset.mediaType == PHAssetMediaTypeImage
+                                                ? @"image"
+                                                : (asset.mediaType == PHAssetMediaTypeAudio
+                                                  ? @"audio"
+                                                  : @"unknown")));
+
+      NSArray<NSString*> *const assetMediaSubtypesLabel = [self mediaSubTypeLabelsForAsset:asset];
+
+      if (includeFileExtension) {
+        NSString *name = [asset valueForKey:@"filename"];
+        NSString *extension = [name pathExtension];
+        fileExtension = [extension lowercaseString];
+      }
+
+      CLLocation *const loc = asset.location;
+
+      [assets addObject:@{
+        @"node": @{
+          @"type": assetMediaTypeLabel, // TODO: switch to mimeType?
+          @"subTypes":assetMediaSubtypesLabel,
+          @"group_name": currentCollectionName,
+          @"image": @{
+              @"uri": uri,
+              @"extension": (includeFileExtension ? fileExtension : [NSNull null]),
+              @"filename": (includeFilename && originalFilename ? originalFilename : [NSNull null]),
+              @"height": (includeImageSize ? @([asset pixelHeight]) : [NSNull null]),
+              @"width": (includeImageSize ? @([asset pixelWidth]) : [NSNull null]),
+              @"fileSize": (includeFileSize && fileSize ? fileSize : [NSNull null]),
+              @"playableDuration": (includePlayableDuration && asset.mediaType != PHAssetMediaTypeImage
+                                    ? @([asset duration]) // fractional seconds
+                                    : [NSNull null])
+          },
+          @"timestamp": @(asset.creationDate.timeIntervalSince1970),
+          @"modificationTimestamp": @(asset.modificationDate.timeIntervalSince1970),
+          @"location": (includeLocation && loc ? @{
+              @"latitude": @(loc.coordinate.latitude),
+              @"longitude": @(loc.coordinate.longitude),
+              @"altitude": @(loc.altitude),
+              @"heading": @(loc.course),
+              @"speed": @(loc.speed), // speed in m/s
+            } : [NSNull null])
+          }
+      }];
+    };
+    if ([groupTypes isEqualToString:@"all"]) {
+        PHFetchResult <PHAsset *> * assetFetchResult = [PHAsset fetchAssetsWithOptions:assetFetchOptions];
+        currentCollectionName = @"All Photos";
+
+//        //  Временный массив для хранения assets в обратном порядке.
+//        NSMutableArray<PHAsset *> *reversedAssets = [NSMutableArray arrayWithCapacity:assetFetchResult.count];
+//
+//        [assetFetchResult enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//            [reversedAssets addObject:obj];
+//        }];
+//
+//        // Перечисляем перевернутые assets
+//        [reversedAssets enumerateObjectsUsingBlock:collectAsset];
+        [assetFetchResult enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:collectAsset];
+    } else {
+      PHFetchResult<PHAssetCollection *> * assetCollectionFetchResult;
+      PHFetchOptions *const FetchOptionsSmart = [PHFetchOptions new];
+        FetchOptionsSmart.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"startDate" ascending:NO]];
+      if ([groupTypes isEqualToString:@"smartalbum"]) {
+        assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAny options:FetchOptionsSmart];
+        [assetCollectionFetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull assetCollection, NSUInteger collectionIdx, BOOL * _Nonnull stopCollections) {
+            if ([assetCollection.localizedTitle isEqualToString:groupName]) {
+                PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
+                currentCollectionName = [assetCollection localizedTitle];
+
+                //  Временный массив для хранения assets в обратном порядке.
+                NSMutableArray<PHAsset *> *reversedAssets = [NSMutableArray arrayWithCapacity:assetsFetchResult.count];
+
+                [assetsFetchResult enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    [reversedAssets addObject:obj];
+                }];
+
+                // Перечисляем перевернутые assets
+                [reversedAssets enumerateObjectsUsingBlock:collectAsset];
+            }
+            
+          *stopCollections = stopCollections_;
+        }];
+      } else {
+        PHAssetCollectionSubtype const collectionSubtype = [RCTConvert PHAssetCollectionSubtype:groupTypes];
+        // Filter collection name ("group")
+        PHFetchOptions *const collectionFetchOptions = [PHFetchOptions new];
+        collectionFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"startDate" ascending:YES]];
+        if (groupName != nil) {
+          collectionFetchOptions.predicate = [NSPredicate predicateWithFormat:@"localizedTitle = %@", groupName];
+        }
+        assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:collectionSubtype options:collectionFetchOptions];
+        [assetCollectionFetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull assetCollection, NSUInteger collectionIdx, BOOL * _Nonnull stopCollections) {
+            // Enumerate assets within the collection
+            PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
+            currentCollectionName = [assetCollection localizedTitle];
+
+            //  Временный массив для хранения assets в обратном порядке.
+            NSMutableArray<PHAsset *> *reversedAssets = [NSMutableArray arrayWithCapacity:assetsFetchResult.count];
+
+            [assetsFetchResult enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [reversedAssets addObject:obj];
+            }];
+
+            // Перечисляем перевернутые assets
+            [reversedAssets enumerateObjectsUsingBlock:collectAsset];
+          *stopCollections = stopCollections_;
+        }];
+      }
+    }
+
+    // If we get this far and haven't resolved the promise yet, we reached the end of the list of photos
+    if (!resolvedPromise) {
+      hasNextPage = NO;
+      RCTResolvePromise(resolve, assets, hasNextPage, isLimited);
+      resolvedPromise = YES;
+    }
+  }, false);
+}
+
 
 RCT_EXPORT_METHOD(deletePhotos:(NSArray<NSString *>*)assets
                   resolve:(RCTPromiseResolveBlock)resolve

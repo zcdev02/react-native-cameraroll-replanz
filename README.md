@@ -5,20 +5,14 @@
 ![MIT License][license-badge]
 [![Lean Core Badge][lean-core-badge]][lean-core-issue]
 
-## *Notice*: The NPM package name has changed, please change your package.json dependency! 
-
-Previous package name: @react-native-community/cameraroll
-
-New package name: @react-native-camera-roll/camera-roll
-
 
 ## Getting started
 
-`$ npm install @react-native-camera-roll/camera-roll --save`
+`$ npm install react-native-cameraroll-replanz --save`
 
 ### Mostly automatic installation
 
-`$ react-native link @react-native-camera-roll/camera-roll && npx pod-install`
+`$ react-native link react-native-cameraroll-replanz && npx pod-install`
 
 ### Manual installation
 
@@ -37,25 +31,18 @@ New package name: @react-native-camera-roll/camera-roll
   - Add `new CameraRollPackage()` to the list returned by the `getPackages()` method
 2. Append the following lines to `android/settings.gradle`:
   	```
-  	include ':@react-native-camera-roll_camera-roll'
-  	project(':@react-native-camera-roll_camera-roll').projectDir = new File(rootProject.projectDir, 	'../node_modules/@react-native-camera-roll/camera-roll/android')
+  	include ':react-native-cameraroll-replanz'
+  	project(':react-native-cameraroll-replanz').projectDir = new File(rootProject.projectDir, 	'../node_modules/@react-native-camera-roll/camera-roll/android')
   	```
 3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
   	```
-      implementation project(':@react-native-camera-roll_camera-roll')
+      implementation project(':react-native-cameraroll-replanz')
   	```
 
-## Migrating from the core `react-native` module
-This module was created when the CameraRoll was split out from the core of React Native. To migrate to this module you need to follow the installation instructions above and then change you imports from:
+## IMPORT
 
 ```javascript
-import { CameraRoll } from "react-native";
-```
-
-to:
-
-```javascript
-import { CameraRoll } from "@react-native-camera-roll/camera-roll";
+import { CameraRoll } from "react-native-cameraroll-replanz";
 ```
 
 ## Usage
@@ -94,7 +81,7 @@ Then you have to explicitly ask for the permission
 
 ```javascript
 import { PermissionsAndroid, Platform } from "react-native";
-import { CameraRoll } from "@react-native-camera-roll/camera-roll";
+import { CameraRoll } from "react-native-cameraroll-replanz";
 
 async function hasAndroidPermission() {
   const getCheckPermissionPromise = () => {
@@ -205,6 +192,7 @@ Returns a Promise with a list of albums
 
 Array of `Album` object
   * title: {string}
+  * type: {string}  // All | SmartAlbum | Album
   * count: {number}
 
 ---
@@ -227,6 +215,7 @@ Returns a Promise with photo identifier objects from the local camera roll of th
 * `after` : {string} : A cursor that matches `page_info { end_cursor }` returned from a previous call to `getPhotos`. Note that using this will reduce performance slightly on iOS. An alternative is just using the `fromTime` and `toTime` filters, which have no such impact.
 * `groupTypes` : {string} : Specifies which group types to filter the results to. Valid values are:
   * `Album`
+  * `SmartAlbum` // default
   * `All` // default
   * `Event`
   * `Faces`
@@ -323,7 +312,7 @@ render() {
 Loading images with listeners and refetchs:
 
 ```javascript
-import { CameraRoll, cameraRollEventEmitter } from '@react-native-camera-roll/camera-roll';
+import { CameraRoll, cameraRollEventEmitter } from 'react-native-cameraroll-replanz';
 
 import { useCallback, useEffect, useState } from 'react';
 
@@ -511,7 +500,7 @@ catch (error) {}
 ```javascript
 import React, {useEffect} from 'react';
 import {Button} from 'react-native';
-import {useCameraRoll} from "@react-native-camera-roll/camera-roll";
+import {useCameraRoll} from "react-native-cameraroll-replanz";
 
 function Example() {
   const [photos, getPhotos, save] = useCameraRoll();
