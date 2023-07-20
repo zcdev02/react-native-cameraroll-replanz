@@ -32,6 +32,7 @@
 RCT_ENUM_CONVERTER(PHAssetCollectionSubtype, (@{
    @"album": @(PHAssetCollectionSubtypeAny),
    @"all": @(PHAssetCollectionSubtypeSmartAlbumUserLibrary),
+   @"smartalbum": @(PHAssetCollectionTypeSmartAlbum),
    @"event": @(PHAssetCollectionSubtypeAlbumSyncedEvent),
    @"faces": @(PHAssetCollectionSubtypeAlbumSyncedFaces),
    @"library": @(PHAssetCollectionSubtypeSmartAlbumUserLibrary),
@@ -247,56 +248,55 @@ RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
   requestPhotoLibraryAccess(reject, loadBlock, true);
 }
 
-// RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
-//                   resolve:(RCTPromiseResolveBlock)resolve
-//                   reject:(RCTPromiseRejectBlock)reject)
-// {
-//   NSString *const mediaType = [params objectForKey:@"assetType"] ? [RCTConvert NSString:params[@"assetType"]] : @"All";
-//   NSString *const albumType = [params objectForKey:@"albumType"] ? [RCTConvert NSString:params[@"albumType"]] : @"Album";
-//   // PHFetchOptions* options = [[PHFetchOptions alloc] init];
-//   // PHFetchResult<PHAssetCollection *> *const assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:options];
-//   NSMutableArray * result = [NSMutableArray new];
-//   // [assetCollectionFetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//   //   PHFetchOptions *const assetFetchOptions = [RCTConvert PHFetchOptionsFromMediaType:mediaType fromTime:0 toTime:0];
-//   //   // Enumerate assets within the collection
-//   //   PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:obj options:assetFetchOptions];
-//   //   if (assetsFetchResult.count > 0) {
-//   //     [result addObject:@{
-//   //       @"title": [obj localizedTitle],
-//   //       @"count": @(assetsFetchResult.count)
-//   //     }];
-//   //   }
-//   // }];
-//    NSString *__block fetchedAlbumType = nil;
-//   void (^convertAsset)(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) =
-//     ^(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//       PHFetchOptions *const assetFetchOptions = [RCTConvert PHFetchOptionsFromMediaType:mediaType fromTime:0 toTime:0];
-//       // Enumerate assets within the collection
-//       PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:obj options:assetFetchOptions];
-//       if (assetsFetchResult.count > 0) {
-//         [result addObject:@{
-//           @"title": [obj localizedTitle],
-//           @"count": @(assetsFetchResult.count),
-//           @"type": fetchedAlbumType
-//         }];
-//       }
-//     };
-
-//   PHFetchOptions* options = [[PHFetchOptions alloc] init];
-//   if ([albumType isEqualToString:@"Album"] || [albumType isEqualToString:@"All"]) {
-//     fetchedAlbumType = @"Album";
-//     PHFetchResult<PHAssetCollection *> *const assets = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:options];
-//     [assets enumerateObjectsUsingBlock:convertAsset];
-//   }
-//   if ([albumType isEqualToString:@"SmartAlbum"] || [albumType isEqualToString:@"All"]) {
-//     fetchedAlbumType = @"SmartAlbum";
-//     PHFetchResult<PHAssetCollection *> *const assets = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAny options:options];
-//     [assets enumerateObjectsUsingBlock:convertAsset];
-//   }
-//   resolve(result);
-// }
-
 //Возвращаем либо все(включая смарт альбомы) или возвращаем только пользовательские альбомы либо только смарт альбомы
+RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    NSString *const mediaType = [params objectForKey:@"assetType"] ? [RCTConvert NSString:params[@"assetType"]] : @"All";
+    NSString *const albumType = [params objectForKey:@"albumType"] ? [RCTConvert NSString:params[@"albumType"]] : @"Album";
+
+    NSMutableArray * result = [NSMutableArray new];
+    PHFetchOptions* options = [[PHFetchOptions alloc] init];
+    NSString *__block fetchedAlbumType = nil;
+    void (^convertAsset)(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) =
+        ^(PHAssetCollection * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            PHFetchOptions *const assetFetchOptions = [RCTConvert PHFetchOptionsFromMediaType:mediaType fromTime:0 toTime:0];
+            // Enumerate assets within the collection
+            PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:obj options:assetFetchOptions];
+            if (assetsFetchResult.count > 0) {
+                [result addObject:@{
+                    @"title": [obj localizedTitle],
+                    @"count": @(assetsFetchResult.count),
+                    @"type": fetchedAlbumType
+                }];
+            }
+        };
+    //Если получили all , то возвращаем все включая смарт альбомы
+    if ([albumType isEqualToString:@"All"]) {
+        fetchedAlbumType = @"Album";
+        PHFetchResult<PHAssetCollection *> *const albumAssets = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:options];
+        [albumAssets enumerateObjectsUsingBlock:convertAsset];
+
+        fetchedAlbumType = @"SmartAlbum";
+        PHFetchResult<PHAssetCollection *> *const smartAlbumAssets = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAny options:options];
+        [smartAlbumAssets enumerateObjectsUsingBlock:convertAsset];
+        //только альбомы пользователя
+    } else if ([albumType isEqualToString:@"Album"]) {
+        fetchedAlbumType = @"Album";
+        PHFetchResult<PHAssetCollection *> *const albumAssets = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:options];
+        [albumAssets enumerateObjectsUsingBlock:convertAsset];
+        //только смарт альбомы
+    } else if ([albumType isEqualToString:@"SmartAlbum"]) {
+        fetchedAlbumType = @"SmartAlbum";
+        PHFetchResult<PHAssetCollection *> *const smartAlbumAssets = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAny options:options];
+        [smartAlbumAssets enumerateObjectsUsingBlock:convertAsset];
+    }
+
+    resolve(result);
+}
+
+
+//метод получения фотографий с устройства
 RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
