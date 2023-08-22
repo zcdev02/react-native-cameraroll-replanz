@@ -8,6 +8,7 @@ type Album = {
   title: string;
   type: AlbumType;
   count: number;
+  subType: string;
 };
 
 type SubTypes =

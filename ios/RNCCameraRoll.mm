@@ -267,7 +267,8 @@ RCT_EXPORT_METHOD(getAlbums:(NSDictionary *)params
                 [result addObject:@{
                     @"title": [obj localizedTitle],
                     @"count": @(assetsFetchResult.count),
-                    @"type": fetchedAlbumType
+                    @"type": fetchedAlbumType,
+                    @"subType": @(obj.assetCollectionSubtype),
                 }];
             }
         };
@@ -308,6 +309,8 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
   NSString *const groupName = [RCTConvert NSString:params[@"groupName"]];
   NSString *const groupTypes = [[RCTConvert NSString:params[@"groupTypes"]] lowercaseString];
   NSString *const mediaType = [RCTConvert NSString:params[@"assetType"]];
+  //NSUInteger const subType = [RCTConvert NSInteger:params[@"subType"]];
+  PHAssetCollectionSubtype subType = [RCTConvert PHAssetCollectionSubtype:params[@"subType"]];
   NSUInteger const fromTime = [RCTConvert NSInteger:params[@"fromTime"]];
   NSUInteger const toTime = [RCTConvert NSInteger:params[@"toTime"]];
   NSArray<NSString *> *const mimeTypes = [RCTConvert NSStringArray:params[@"mimeTypes"]];
@@ -451,20 +454,49 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
 
     //Получаем все фотографии если groupTypes = all
     if ([groupTypes isEqualToString:@"all"]) {
-      //Делаем запрос и получаем из галереи все assets
-        PHFetchResult<PHAsset *> *assetFetchResult = [PHAsset fetchAssetsWithOptions:nil];
-            currentCollectionName = @"All Photos";
+      //Делаем запросы по альбомам
+      PHFetchResult<PHAssetCollection *> * assetCollectionFetchResult;
+      //Добавляем начальный метод сортировки для получения фоток из альбомов
+      PHFetchOptions *const FetchOptionsSmart = [PHFetchOptions new];
+        FetchOptionsSmart.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"startDate" ascending:NO]];
 
-            // Временный массив для хранения assets в обратном порядке.
-            NSMutableArray<PHAsset *> *reversedAssets = [NSMutableArray arrayWithCapacity:assetFetchResult.count];
+        assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumUserLibrary options:FetchOptionsSmart];
+        currentCollectionName = @"Recent";
+        [assetCollectionFetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull assetCollection, NSUInteger collectionIdx, BOOL * _Nonnull stopCollections) {
+            //Находим нужный альбом и для всех элементов применяем метод реверсии полученного результата
+            // if ([assetCollection.localizedTitle isEqualToString:groupName]) {
+                PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
+                 currentCollectionName = [assetCollection localizedTitle];
+
+                //  Временный массив для хранения assets в обратном порядке.
+                NSMutableArray<PHAsset *> *reversedAssets = [NSMutableArray arrayWithCapacity:assetsFetchResult.count];
+                
+                //Записываем в reversedAssets перевернутый результат
+                [assetsFetchResult enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                    [reversedAssets addObject:obj];
+                }];
+
+                // Перечисляем перевернутые assets в node
+                [reversedAssets enumerateObjectsUsingBlock:collectAsset];
+            // }
+            
+          *stopCollections = stopCollections_;
+        }];
+
+      // //Делаем запрос и получаем из галереи все assets
+      //   PHFetchResult<PHAsset *> *assetFetchResult = [PHAsset fetchAssetsWithOptions:nil];
+      //       currentCollectionName = @"All Photos";
+
+      //       // Временный массив для хранения assets в обратном порядке.
+      //       NSMutableArray<PHAsset *> *reversedAssets = [NSMutableArray arrayWithCapacity:assetFetchResult.count];
              
-            ///Записываем в reversedAssets перевернутый результат
-            [assetFetchResult enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                [reversedAssets addObject:obj];
-            }];
+      //       ///Записываем в reversedAssets перевернутый результат
+      //       [assetFetchResult enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(PHAsset * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+      //           [reversedAssets addObject:obj];
+      //       }];
 
-            // Перечисляем перевернутые assets в node
-            [reversedAssets enumerateObjectsUsingBlock:collectAsset];
+      //       // Перечисляем перевернутые assets в node
+      //       [reversedAssets enumerateObjectsUsingBlock:collectAsset];
     } else {
       //Делаем запросы по альбомам
       PHFetchResult<PHAssetCollection *> * assetCollectionFetchResult;
@@ -473,10 +505,10 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
         FetchOptionsSmart.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"startDate" ascending:NO]];
       if ([groupTypes isEqualToString:@"smartalbum"]) {
         //Получаем фотки из альбомов
-        assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAny options:FetchOptionsSmart];
+        assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:subType options:FetchOptionsSmart];
         [assetCollectionFetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull assetCollection, NSUInteger collectionIdx, BOOL * _Nonnull stopCollections) {
             //Находим нужный альбом и для всех элементов применяем метод реверсии полученного результата
-            if ([assetCollection.localizedTitle isEqualToString:groupName]) {
+            // if ([assetCollection.localizedTitle isEqualToString:groupName]) {
                 PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:nil];
                 currentCollectionName = [assetCollection localizedTitle];
 
@@ -490,7 +522,7 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
 
                 // Перечисляем перевернутые assets в node
                 [reversedAssets enumerateObjectsUsingBlock:collectAsset];
-            }
+            // }
             
           *stopCollections = stopCollections_;
         }];

@@ -90,6 +90,11 @@ export type GetPhotosParams = {
    */
   groupName?: string;
 
+    /**
+   * Specifies filter on group subtype, basically for smart albums
+   */
+    subType?: string,
+
   /**
    * Specifies filter on asset type
    */
@@ -177,6 +182,7 @@ export type GetAlbumsParams = {
 export type Album = {
   title: string;
   type: AlbumType;
+  subType: string,
   count: number;
 };
 
@@ -231,7 +237,7 @@ export class CameraRoll {
   }
 
   static getAlbums(
-    params: GetAlbumsParams = {assetType: 'All', albumType: 'Album'},
+    params: GetAlbumsParams = {assetType: 'All', albumType: 'All'},
   ): Promise<Album[]> {
     return RNCCameraRoll.getAlbums(params);
   }
